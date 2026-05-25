@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import apiRouter from "@/api/router";
+import { SiteHeader } from "@/components/SiteHeader";
 
 const formatPrice = (priceCents: number, currency: string) => {
   return new Intl.NumberFormat("en-US", {
@@ -23,18 +24,7 @@ export default function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
-          <Link className="text-xl font-bold" href="/">
-            Emarket
-          </Link>
-          <nav className="flex items-center gap-4 text-sm font-medium">
-            <Link href="/products">Products</Link>
-            <Link href="/seller">Sell</Link>
-            <Link href="/cart">Cart</Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="mx-auto max-w-7xl px-6 py-10">
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

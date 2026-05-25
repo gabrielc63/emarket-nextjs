@@ -1,28 +1,10 @@
 import Link from "next/link";
+import { SiteHeader } from "@/components/SiteHeader";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-4">
-          <div className="text-xl font-bold">Emarket</div>
-          <div className="flex flex-1 items-center rounded-md border border-slate-300 bg-white">
-            <input
-              className="w-full rounded-md px-4 py-2 outline-none"
-              placeholder="Search products, brands, and stores"
-              type="search"
-            />
-            <button className="rounded-r-md bg-amber-400 px-5 py-2 font-semibold text-slate-950">
-              Search
-            </button>
-          </div>
-          <nav className="hidden items-center gap-4 text-sm font-medium md:flex">
-            <a href="/login">Sign in</a>
-            <a href="/seller">Sell</a>
-            <a href="/cart">Cart</a>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader showSearch />
 
       <main>
         <section className="bg-slate-900 text-white">
