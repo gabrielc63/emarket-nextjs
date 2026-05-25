@@ -1,7 +1,8 @@
-import { defaultConfig } from "next/dist/server/config-shared";
+import productEndpoints from "./product";
 import userEndpoints from "./user";
 
 const endpoints = {
+  products: productEndpoints,
   users: userEndpoints,
 };
 

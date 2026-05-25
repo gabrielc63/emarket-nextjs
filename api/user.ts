@@ -4,9 +4,9 @@ type Endpoints = {
   getUsers: () => Promise<APISchema.User[]>;
 };
 
-const endpoints = {
+const endpoints: Endpoints = {
   getUsers: async () => {
-    return await api("users");
+    return await api<APISchema.User[]>("users");
   },
 };
 

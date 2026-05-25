@@ -13,17 +13,15 @@ type ApiOptions = {
   params?: object;
 };
 
-export const api = async (url: string, options: ApiOptions = {}) => {
+export const api = async <T>(
+  url: string,
+  options: ApiOptions = {},
+): Promise<T> => {
   const { data, method = "get", params } = options;
-
-  const accessToken = "ACCESS_TOKEN";
 
   try {
     const response = await axiosInstance.request({
       data,
-      headers: {
-        Authorization: "Bearer ${accessToken}",
-      },
       method,
       params,
       responseType: "json",
@@ -32,7 +30,16 @@ export const api = async (url: string, options: ApiOptions = {}) => {
 
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.errors);
+    if (axios.isAxiosError<{ error?: string; errors?: string | string[] }>(error)) {
+      const message =
+        error.response?.data?.errors ??
+        error.response?.data?.error ??
+        error.message;
+
+      throw new Error(Array.isArray(message) ? message.join(", ") : message);
+    }
+
+    throw error;
   }
 };
 
