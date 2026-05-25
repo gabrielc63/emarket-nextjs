@@ -16,6 +16,7 @@ type ProductResponse = {
 
 type Endpoints = {
   getProducts: () => Promise<APISchema.Product[]>;
+  getProduct: (id: number | string) => Promise<APISchema.Product>;
 };
 
 const toProduct = (product: ProductResponse): APISchema.Product => ({
@@ -37,6 +38,11 @@ const endpoints: Endpoints = {
     const products = await api<ProductResponse[]>("products");
 
     return products.map(toProduct);
+  },
+  getProduct: async (id) => {
+    const product = await api<ProductResponse>(`products/${id}`);
+
+    return toProduct(product);
   },
 };
 

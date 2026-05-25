@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
@@ -37,18 +39,18 @@ export default function Home() {
                 into a single Next.js and Rails commerce platform.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <a
+                <Link
                   className="rounded-md bg-amber-400 px-5 py-3 font-semibold text-slate-950"
                   href="/products"
                 >
                   Browse products
-                </a>
-                <a
+                </Link>
+                <Link
                   className="rounded-md border border-white/30 px-5 py-3 font-semibold"
                   href="/seller"
                 >
                   Start selling
-                </a>
+                </Link>
               </div>
             </div>
             <div className="rounded-lg bg-white p-5 text-slate-950 shadow-xl">
@@ -76,13 +78,13 @@ export default function Home() {
           <h2 className="text-2xl font-bold">Shop by category</h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {["Electronics", "Home", "Fashion", "Sports"].map((category) => (
-              <a
+              <Link
                 className="rounded-lg border border-slate-200 bg-white p-6 font-semibold shadow-sm"
                 href="/products"
                 key={category}
               >
                 {category}
-              </a>
+              </Link>
             ))}
           </div>
         </section>
@@ -95,9 +97,9 @@ export default function Home() {
                 Static placeholders for the first storefront screen.
               </p>
             </div>
-            <a className="text-sm font-semibold text-slate-700" href="/products">
+            <Link className="text-sm font-semibold text-slate-700" href="/products">
               View all
-            </a>
+            </Link>
           </div>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[

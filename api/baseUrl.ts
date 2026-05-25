@@ -1,10 +1,10 @@
-const baseUrls = {
-  development: "http://localhost:3002/v1/",
-  staging: "",
-  production: "",
-  test: "",
-};
+const defaultBaseUrl = "http://localhost:3002/v1/";
 
-const baseUrl = baseUrls[process.env.NODE_ENV || "development"];
+const configuredBaseUrl =
+  process.env.NEXT_PUBLIC_API_BASE_URL || defaultBaseUrl;
+
+const baseUrl = configuredBaseUrl.endsWith("/")
+  ? configuredBaseUrl
+  : `${configuredBaseUrl}/`;
 
 export default baseUrl;
