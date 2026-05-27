@@ -7,19 +7,13 @@ import apiRouter from "@/api/router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { currentUserQueryKey, useCurrentUser } from "@/hooks/useCurrentUser";
 
-export default function ProfilePage() {
-  const queryClient = useQueryClient();
-  const { data: currentUser, error, isLoading } = useCurrentUser();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
-  const [loadedUserId, setLoadedUserId] = useState<number | null>(null);
+type User = APISchema.User;
 
-  if (currentUser && loadedUserId !== currentUser.id) {
-    setLoadedUserId(currentUser.id);
-    setName(currentUser.name || "");
-    setEmail(currentUser.email);
-  }
+function ProfileForm({ currentUser }: { currentUser: User }) {
+  const queryClient = useQueryClient();
+  const [name, setName] = useState(currentUser.name || "");
+  const [email, setEmail] = useState(currentUser.email);
+  const [message, setMessage] = useState<string | null>(null);
 
   const updateProfile = useMutation({
     mutationFn: apiRouter.auth.updateCurrentUser,
@@ -36,75 +30,96 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950">
-      <SiteHeader />
+    <form
+      className="mt-6 rounded-xl bg-white p-6 shadow-sm ring-1 ring-blue-100"
+      onSubmit={handleSubmit}
+    >
+      {message ? (
+        <div className="mb-5 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm font-semibold text-emerald-700">
+          {message}
+        </div>
+      ) : null}
 
-      <main className="mx-auto max-w-3xl px-6 py-10">
-        <Link className="text-sm font-semibold text-slate-700" href="/products">
+      {updateProfile.error ? (
+        <div className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-700">
+          {updateProfile.error instanceof Error
+            ? updateProfile.error.message
+            : "Could not update profile."}
+        </div>
+      ) : null}
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="block text-sm font-bold">
+          Name
+          <input
+            className="mt-2 w-full rounded-md border border-blue-200 bg-blue-50/40 px-3 py-2.5 outline-none focus:border-[#0757c7] focus:bg-white focus:ring-4 focus:ring-blue-100"
+            onChange={(event) => setName(event.target.value)}
+            type="text"
+            value={name}
+          />
+        </label>
+
+        <label className="block text-sm font-bold">
+          Email
+          <input
+            className="mt-2 w-full rounded-md border border-blue-200 bg-blue-50/40 px-3 py-2.5 outline-none focus:border-[#0757c7] focus:bg-white focus:ring-4 focus:ring-blue-100"
+            onChange={(event) => setEmail(event.target.value)}
+            type="email"
+            value={email}
+          />
+        </label>
+      </div>
+
+      <button
+        className="mt-6 rounded-md bg-[#0757c7] px-5 py-3 font-bold text-white shadow-sm hover:bg-[#063f98] disabled:cursor-not-allowed disabled:opacity-60"
+        disabled={updateProfile.isPending}
+        type="submit"
+      >
+        {updateProfile.isPending ? "Saving..." : "Save changes"}
+      </button>
+    </form>
+  );
+}
+
+export default function ProfilePage() {
+  const { data: currentUser, error, isLoading } = useCurrentUser();
+
+  return (
+    <div className="min-h-screen bg-[#eef6ff] text-slate-950">
+      <SiteHeader showSearch />
+
+      <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+        <Link
+          className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-bold text-[#0757c7] shadow-sm ring-1 ring-blue-100 hover:bg-blue-50"
+          href="/products"
+        >
           Back to products
         </Link>
 
-        <h1 className="mt-6 text-3xl font-bold">Profile settings</h1>
-        <p className="mt-2 text-slate-600">
-          Update your marketplace account name and email.
-        </p>
+        <section className="mt-6 rounded-xl bg-white p-5 shadow-sm ring-1 ring-blue-100 md:p-7">
+          <p className="text-sm font-bold uppercase tracking-wide text-sky-700">
+            Account
+          </p>
+          <h1 className="mt-2 text-3xl font-black tracking-tight">
+            Profile settings
+          </h1>
+          <p className="mt-2 max-w-2xl text-slate-600">
+            Keep your marketplace account details current for checkout and order
+            communication.
+          </p>
+        </section>
 
         {isLoading ? (
-          <div className="mt-8 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mt-6 rounded-xl bg-white p-6 font-semibold shadow-sm ring-1 ring-blue-100">
             Loading profile...
           </div>
         ) : error ? (
-          <div className="mt-8 rounded-lg border border-red-200 bg-red-50 p-5 text-red-700">
+          <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-5 font-semibold text-red-700">
             Please sign in to manage your profile.
           </div>
-        ) : (
-          <form
-            className="mt-8 rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
-            onSubmit={handleSubmit}
-          >
-            {message ? (
-              <div className="mb-5 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
-                {message}
-              </div>
-            ) : null}
-
-            {updateProfile.error ? (
-              <div className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                {updateProfile.error instanceof Error
-                  ? updateProfile.error.message
-                  : "Could not update profile."}
-              </div>
-            ) : null}
-
-            <label className="block text-sm font-medium">
-              Name
-              <input
-                className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-slate-900"
-                onChange={(event) => setName(event.target.value)}
-                type="text"
-                value={name}
-              />
-            </label>
-
-            <label className="mt-4 block text-sm font-medium">
-              Email
-              <input
-                className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-slate-900"
-                onChange={(event) => setEmail(event.target.value)}
-                type="email"
-                value={email}
-              />
-            </label>
-
-            <button
-              className="mt-6 rounded-md bg-slate-900 px-4 py-2 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={updateProfile.isPending}
-              type="submit"
-            >
-              {updateProfile.isPending ? "Saving..." : "Save changes"}
-            </button>
-          </form>
-        )}
+        ) : currentUser ? (
+          <ProfileForm currentUser={currentUser} key={currentUser.id} />
+        ) : null}
       </main>
     </div>
   );

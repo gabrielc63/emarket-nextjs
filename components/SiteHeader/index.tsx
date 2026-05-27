@@ -30,20 +30,27 @@ export const SiteHeader = ({ showSearch = false }: SiteHeaderProps) => {
   };
 
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-4">
-        <Link className="text-xl font-bold" href="/">
-          Emarket
+    <header className="sticky top-0 z-30 border-b border-blue-900/10 bg-[#0757c7] text-white shadow-[0_10px_30px_rgba(7,87,199,0.18)]">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:flex-nowrap">
+        <Link
+          className="flex items-center gap-2 text-xl font-black tracking-tight"
+          href="/"
+        >
+          <span className="grid size-9 place-items-center rounded-md bg-white text-[#0757c7] shadow-sm">
+            E
+          </span>
+          <span>Emarket</span>
         </Link>
 
         {showSearch ? (
-          <div className="flex flex-1 items-center rounded-md border border-slate-300 bg-white">
+          <div className="order-3 flex w-full flex-1 items-center rounded-md bg-white p-1 shadow-[0_8px_24px_rgba(15,23,42,0.16)] ring-1 ring-white/30 lg:order-none lg:w-auto">
             <input
-              className="w-full rounded-md px-4 py-2 outline-none"
+              aria-label="Search products"
+              className="w-full rounded-md px-4 py-2.5 text-slate-900 outline-none placeholder:text-slate-400"
               placeholder="Search products, brands, and stores"
               type="search"
             />
-            <button className="rounded-r-md bg-amber-400 px-5 py-2 font-semibold text-slate-950">
+            <button className="rounded-md bg-sky-500 px-5 py-2.5 font-bold text-white shadow-sm hover:bg-sky-400">
               Search
             </button>
           </div>
@@ -51,15 +58,23 @@ export const SiteHeader = ({ showSearch = false }: SiteHeaderProps) => {
           <div className="flex-1" />
         )}
 
-        <nav className="flex items-center gap-4 text-sm font-medium">
-          <Link href="/products">Products</Link>
-          <Link href="/seller">Sell</Link>
-          <Link href="/cart">Cart</Link>
+        <nav className="ml-auto flex items-center gap-1 text-sm font-semibold">
+          <Link className="rounded-md px-3 py-2 hover:bg-white/10" href="/products">
+            Products
+          </Link>
+          <Link className="rounded-md px-3 py-2 hover:bg-white/10" href="/seller">
+            Sell
+          </Link>
+          <Link className="rounded-md px-3 py-2 hover:bg-white/10" href="/cart">
+            Cart
+          </Link>
           {currentUser ? (
             <>
-              <Link href="/profile">{currentUser.name || "Profile"}</Link>
+              <Link className="rounded-md px-3 py-2 hover:bg-white/10" href="/profile">
+                {currentUser.name || "Profile"}
+              </Link>
               <button
-                className="cursor-pointer rounded-md px-2 py-1 font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                className="cursor-pointer rounded-md px-3 py-2 font-semibold hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={isSigningOut}
                 onClick={handleSignOut}
                 type="button"
@@ -68,7 +83,9 @@ export const SiteHeader = ({ showSearch = false }: SiteHeaderProps) => {
               </button>
             </>
           ) : isLoading ? null : (
-            <Link href="/login">Sign in</Link>
+            <Link className="rounded-md bg-white px-3 py-2 text-[#0757c7] hover:bg-blue-50" href="/login">
+              Sign in
+            </Link>
           )}
         </nav>
       </div>
