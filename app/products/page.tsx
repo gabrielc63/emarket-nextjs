@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiRouter from "@/api/router";
 import { SiteHeader } from "@/components/SiteHeader";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const formatPrice = (priceCents: number, currency: string) => {
   return new Intl.NumberFormat("en-US", {
@@ -15,6 +17,9 @@ const formatPrice = (priceCents: number, currency: string) => {
 const filters = ["All", "Free shipping", "In stock", "Best sellers"];
 
 export default function ProductsPage() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { data: currentUser } = useCurrentUser();
   const {
     data: products,
     error,
@@ -22,6 +27,38 @@ export default function ProductsPage() {
   } = useQuery({
     queryKey: ["products"],
     queryFn: apiRouter.products.getProducts,
+  });
+  const { data: wishlists } = useQuery({
+    enabled: Boolean(currentUser),
+    queryKey: ["wishlists"],
+    queryFn: apiRouter.wishlists.getWishlists,
+  });
+  const savedProductIds = new Set(
+    wishlists?.flatMap((wishlist) =>
+      wishlist.items.map((item) => item.product.id),
+    ) ?? [],
+  );
+  const addToWishlist = useMutation({
+    mutationFn: async (productId: number) => {
+      if (!currentUser) {
+        router.push("/login");
+        return;
+      }
+
+      const availableWishlists =
+        wishlists ?? (await apiRouter.wishlists.getWishlists());
+      const wishlist =
+        availableWishlists[0] ??
+        (await apiRouter.wishlists.createWishlist({ name: "Favorites" }));
+
+      await apiRouter.wishlists.addProductToWishlist({
+        wishlistId: wishlist.id,
+        productId,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wishlists"] });
+    },
   });
 
   return (
@@ -95,7 +132,29 @@ export default function ProductsPage() {
                 className="group overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-blue-100 hover:-translate-y-1 hover:shadow-[0_18px_35px_rgba(7,87,199,0.14)]"
                 key={product.id}
               >
-                <div className="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-blue-100 via-sky-50 to-white p-6 text-center text-lg font-black text-[#0757c7]">
+                <div className="relative flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-blue-100 via-sky-50 to-white p-6 text-center text-lg font-black text-[#0757c7]">
+                  <button
+                    aria-label={
+                      savedProductIds.has(product.id)
+                        ? `${product.name} is already in your wishlist`
+                        : `Add ${product.name} to wishlist`
+                    }
+                    className={`absolute right-3 top-3 grid size-10 place-items-center rounded-full bg-white text-xl shadow-sm ring-1 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 ${
+                      savedProductIds.has(product.id)
+                        ? "text-red-600 ring-red-100"
+                        : "text-slate-400 ring-blue-100 hover:text-red-600"
+                    }`}
+                    disabled={addToWishlist.isPending}
+                    onClick={() => addToWishlist.mutate(product.id)}
+                    type="button"
+                  >
+                    {addToWishlist.isPending &&
+                    addToWishlist.variables === product.id
+                      ? "..."
+                      : savedProductIds.has(product.id)
+                        ? "♥"
+                        : "♡"}
+                  </button>
                   {product.name}
                 </div>
                 <div className="p-5">
